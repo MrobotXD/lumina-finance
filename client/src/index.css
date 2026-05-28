@@ -1,0 +1,60 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --radius-premium: 1rem;
+  }
+
+  body {
+    @apply antialiased text-slate-900 dark:text-slate-100 transition-colors duration-300;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+}
+
+@layer components {
+  .glass-panel {
+    @apply bg-white/70 dark:bg-slate-900/70 backdrop-blur-md border border-white/20 dark:border-slate-700/30 shadow-glass;
+  }
+
+  .glass-button {
+    @apply px-4 py-2 rounded-xl transition-all duration-200
+    bg-white/10 hover:bg-white/20 dark:bg-slate-800/50 dark:hover:bg-slate-700/50
+    border border-white/20 dark:border-slate-700/30 backdrop-blur-sm;
+  }
+
+  .premium-input {
+    @apply w-full px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700
+    bg-white/50 dark:bg-slate-800/50 backdrop-blur-sm transition-all duration-200
+    outline-none focus:ring-2 ring-primary-400/50 focus:border-primary-400;
+  }
+}
+
+.shimmer-effect {
+  position: relative;
+  overflow: hidden;
+}
+
+.shimmer-effect::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.2),
+    transparent
+  );
+  animation: shimmer 2s infinite;
+}
+
+.dark .shimmer-effect::after {
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.05),
+    transparent
+  );
+}
