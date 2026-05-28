@@ -1,8 +1,84 @@
-import { useContext } from 'react';
-import { AuthContext } from '../context/AuthContext';
+import { useState, useEffect } from 'react'
+import { supabase } from '../lib/supabase'
 
 export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (!context) throw new Error('useAuth must be used within an AuthProvider');
-  return context;
-};
+  const [user, setUser] = useState(null)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    // Get initial session
+    const getSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession()
+      if (session?.user) {
+        setUser({
+          id: session.user.id,
+          email: session.user.email,
+          // Add any other user metadata you need
+        })
+      }
+      setLoading(false)
+    }
+
+    getSession()
+
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (_event, session) => {
+        if (session?.user) {
+          setUser({
+            id: session.user.id,
+            email: session.user.email,
+          })
+        } else {
+          setUser(null)
+        }
+      }
+    )
+
+    // Cleanup subscription on unmount
+    return () => subscription.unsubscribe()
+  }, [])
+
+  const signIn = async (email, password) => {
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    })
+    if (error) throw error
+    return data
+  }
+
+  const signUp = async (email, password, userData = {}) => {
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: userData
+      }
+    })
+    if (error) throw error
+    return data
+  }
+
+  const signOut = async () => {
+    const { error } = await supabase.auth.signOut()
+    if (error) throw error
+  }
+
+  const resetPassword = async (email) => {
+    const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
+      // You can set redirect options here if needed
+    })
+    if (error) throw error
+    return data
+  }
+
+  return {
+    user,
+    loading,
+    signIn,
+    signUp,
+    signOut,
+    resetPassword
+  }
+}

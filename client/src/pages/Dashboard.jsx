@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import api from '../services/api';
+import { useQuery } from '@tanstack/react-query';
+import { getProfile, getExpenses, getDebts, getBudgets } from '../services/supabaseService';
 import Card from '../components/ui/Card';
 import { PremiumDonutChart, PremiumAreaChart } from '../components/charts/FinanceCharts';
 import { Wallet, HandCoins, Target, TrendingUp, ArrowUpRight, ArrowDownRight } from 'lucide-react';
 import { calculateFinancialHealth, generateInsights } from '../utils/analyticsEngine';
 import SmartInsights from '../components/ui/SmartInsights';
 import { cn } from '../utils/cn';
+import { useAuth } from '../hooks/useAuth';
 
 const Dashboard = () => {
   const [data, setData] = useState({
